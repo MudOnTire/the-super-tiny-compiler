@@ -98,6 +98,24 @@
  * Well good, because this is exactly what we are going to compile. While this
  * is neither a complete LISP or C syntax, it will be enough of the syntax to
  * demonstrate many of the major pieces of a modern compiler.
+ * 
+ * 中文翻译：========================================================================
+ * 
+ * 今天，我们一起来写一个编译器（compiler），但不仅仅是一个编译器，而是一个超级迷你小巧的编译器。
+ * 这个编译器是如此小巧，以至于如果把所有的注释都去掉只剩下不到200行代码。
+ * 
+ * 我们将使用这个编译器把类Lisp的函数调用语法转成类C的，如果大家对Lisp或者C不了解，我快速普及一下：
+ * 
+ * 下面是常见的加、减函数调用在Lisp和C中的写法：
+ * 
+ *                  LISP                      C
+ *
+ *   2 + 2          (add 2 2)                 add(2, 2)
+ *   4 - 2          (subtract 4 2)            subtract(4, 2)
+ *   2 + (4 - 2)    (add 2 (subtract 4 2))    add(2, subtract(4, 2))
+ * 
+ * 简单吧？这就是我们需要编译的全部内容，虽然不是完整的Lisp和C的语法，但是也能展示一个现代的编译器
+ * 需要具备的很多功能。
  */
 
 /**
@@ -112,6 +130,17 @@
  *
  * 3. *Code Generation* takes the transformed representation of the code and
  *    turns it into new code.
+ * 
+ * 中文翻译：========================================================================
+ * 
+ * 大部分编译器的工作可以分为三个基本阶段：解析（Parsing）、转换（Transformation）、代码生成（
+ * Code Generation ）
+ * 
+ * 1. *解析* 是将原始代码转换成更抽象的“存在”（AST，抽象语法树）
+ * 
+ * 2. *转换* 是对AST进行各种变换
+ * 
+ * 3. *代码生成* 是将变换后的AST重新转成代码
  */
 
 /**
@@ -136,6 +165,20 @@
  *    An Abstract Syntax Tree, or AST for short, is a deeply nested object that
  *    represents code in a way that is both easy to work with and tells us a lot
  *    of information.
+ * 
+ * 中文翻译：========================================================================
+ * 
+ * *解析* 通常可以分成两个阶段：词法分析和语法分析
+ * 
+ * 1. *词法分析：* 将原始代码通过标记程序（tokenizer）或者词法分析器（lexer）分解为一个个标记（token）
+ * 标记对象存储在一个数组中，用以描述一段段孤立的语法片段。它们可以是数字、标签、标点符号、运算符等等。
+ * 
+ * 2. *语法分析：* 将标记重新格式化为用于描述该段语法、以及它与其他片段关系的表示形式，这种表现形式称为“
+ * 中间表示”或者“抽象语法树（Abstract Syntax Tree）”
+ * 
+ * 抽象语法树（简称为AST），是一种深层嵌套的对象以易于使用的方式表示代码并提供关于代码的一切信息
+ * 
+ *  
  *
  * For the following syntax:
  *
