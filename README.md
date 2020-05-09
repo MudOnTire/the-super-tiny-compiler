@@ -166,3 +166,4 @@ var visitor = {
 
 ## 代码生成（Code Generation）
 
+代码生成是Compile的最后阶段，有时候这一阶段会做一些和转换（Transformation）重叠的工作，但是大部分时候代码生成只是将AST转成字符串代码。代码生成有几种不同的工作方式，有些编译器
