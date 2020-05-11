@@ -421,6 +421,10 @@
 
 // We start by accepting an input string of code, and we're gonna set up two
 // things...
+/**
+ * 标记程序：接收代码文本，输出标记的数组
+ * @param {string} input 代码文本
+ */
 function tokenizer(input) {
 
   // A `current` variable for tracking our position in the code like a cursor.
