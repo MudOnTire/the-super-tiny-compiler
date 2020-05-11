@@ -65,7 +65,7 @@ function tokenizer(input) {
       }
 
       // 检测完一个连续数字序列，则生成一个token
-      tokens.push({type:'number',value});
+      tokens.push({ type: "number", value });
 
       // 跳出当次循环
       continue;
@@ -73,6 +73,55 @@ function tokenizer(input) {
 
     // 同样的，我们增加对字符串的检测，判定双引号之间的内容为字符串
     //   (concat "foo" "bar")
-    //            ^^^   ^^^ string tokens
+    //            ^^^   ^^^ foo，bar分别是一个token
+    // 首先检测左边的'"'
+    if (char === '"') {
+      // 存储字符串的内容
+      let value = "";
+
+      // 跳过左边的 "
+      char = input[++current];
+
+      // 遍历两个 " 之间的内容
+      while (char !== '"') {
+        value += char;
+        char = input[++current];
+      }
+
+      // 跳过右边的 "
+      char = input[++current];
+
+      // 检测完一个字符串则生成一个token
+      tokens.push({ type: "string", value });
+
+      continue;
+    }
+
+    // 最后需要检测的token类型是 `name`，比如变量、函数的名称。本Demo中认为`name` 是一段连续的字母，比如：
+    //
+    //   (add 2 4)
+    //    ^^^
+    //    Name token
+    //
+    let LETTERS = /[a-z]/i;
+    if (LETTERS.test(char)) {
+      let value = "";
+
+      // 遍历所有连续的字母
+      while (LETTERS.test(char)) {
+        value += char;
+        char = input[++current];
+      }
+
+      // 检测完成生成token
+      tokens.push({ type: "name", value });
+
+      continue;
+    }
+
+    // 最后，如果当前字符没有符合条件的匹配，则报错并退出
+    throw new TypeError('I dont know what this character is: ' + char);
   }
+
+  return tokens;
 }
