@@ -313,3 +313,21 @@ function tokenizer(input) {
   return tokens;
 }
 ```
+
+## 解析器（Parser）
+
+解析器将把上一步得到的token的数组转换成AST。
+
+```
+[{ type: 'paren', value: '(' }, ...]  
+
+ => 
+ 
+{ type: 'Program', body: [...] }
+```
+
+定义一个 `parser()` 函数，接收token数组为参数：
+
+```
+
+```
