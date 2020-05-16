@@ -120,12 +120,63 @@ function tokenizer(input) {
     }
 
     // 最后，如果当前字符没有符合条件的匹配，则报错并退出
-    throw new TypeError('I dont know what this character is: ' + char);
+    throw new TypeError("I dont know what this character is: " + char);
   }
 
   return tokens;
 }
 
-function parser(tokens){
-  
+function parser(tokens) {
+  // 依然使用current变量记录循环到的位置
+  let current = 0;
+
+  // 这次我们使用递归的方法去遍历
+  // 定义一个walk方法
+  function walk() {
+    // 获取当前位置的token
+    let token = tokens[current];
+
+    // 将每种类型的token拆分到不同的代码路径中
+    // 从number类型的开始
+    if (token.type === "number") {
+      // 每找到一个current递增
+      current++;
+
+      // 返回一个类型为 `NumberLiteral`，值为token。value的AST节点
+      return {
+        type: "NumberLiteral",
+        value: token.value,
+      };
+    }
+
+    // string类型同理
+    if (token.type === "string") {
+      current++;
+      return {
+        type: "StringLiteral",
+        value: token.value,
+      };
+    }
+
+    // 接下来，查找调用表达式（CallExpression），从找到 `(` 开始
+    if (token.type === "paren" && token.value === "(") {
+      // current自增，因为AST并不关心括号的存在
+      token = tokens[++current];
+
+      // 创建类型为 `CallExpression` 的节点，节点名称设为token的值，因为Lisp的语法中跟在 `(` 后面的就是方法的名称
+      let node = {
+        type: "CallExpression",
+        name: token.value,
+        params: [],
+      };
+
+      // current自增，跳过name token
+      token = tokens[++current];
+    
+      // 接下来查找下一个 `)` 前函数所有的参数token
+      // 因为函数存在嵌套的情况，比如 `(add 2 (substract 4 2))` 所以这里我们使用递归进行遍历
+      
+
+    }
+  }
 }
