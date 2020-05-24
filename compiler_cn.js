@@ -172,11 +172,57 @@ function parser(tokens) {
 
       // current自增，跳过name token
       token = tokens[++current];
-    
-      // 接下来查找下一个 `)` 前函数所有的参数token
-      // 因为函数存在嵌套的情况，比如 `(add 2 (substract 4 2))` 所以这里我们使用递归进行遍历
-      
 
+      // 接下来查找下一个 `)` 前函数所有的参数token
+      // 因为函数存在嵌套的情况，比如 `(add 2 (substract 4 2))` 所以这里我们使用递归进行遍历，我们可以看到在token数组中存在多个 `)`:
+      //
+      //   [
+      //     { type: 'paren',  value: '('        },
+      //     { type: 'name',   value: 'add'      },
+      //     { type: 'number', value: '2'        },
+      //     { type: 'paren',  value: '('        },
+      //     { type: 'name',   value: 'subtract' },
+      //     { type: 'number', value: '4'        },
+      //     { type: 'number', value: '2'        },
+      //     { type: 'paren',  value: ')'        }, <<< Closing parenthesis
+      //     { type: 'paren',  value: ')'        }, <<< Closing parenthesis
+      //   ]
+      // 我们将依靠嵌套的walk函数来查找任何嵌套的CallExpression之上，并给current变量递增
+      // 因此，我们创建了一个 `while` 循环，该循环将一直持续到遇到一个type为 `paren`和 value为 `)`的标识。
+      while (
+        token.type !== "paren" ||
+        (token.type === "paren" && token.value !== ")")
+      ) {
+        // 我们将调用 `walk` 函数，并将其返回的 `node` push到 `node.params` 中。
+        node.params.push(walk());
+        token = tokens[current];
+      }
+
+      // 最后，我们将最后一次使 `current` 递增以跳过 `)`。
+      current++;
+
+      //同样，如果最后还没有识别出标识类型将抛出错误。
+      throw new TypeError(token.type);
     }
+
+    // 现在，创建AST，它将具有一个类型为 `Program` 的根节点。
+    let ast = {
+      type: "Program",
+      body: [],
+    };
+
+
+    // 现在开始执行 `walk` 函数，将节点push到 `ast.body` 数组中。
+    // 我们在循环内执行此操作的原因是因为我们的程序可以将 `CallExpression` 顺次相连而不是嵌套。
+    //
+    //   (add 2 2)
+    //   (subtract 4 2)
+    //
+    while (current < tokens.length) {
+      ast.body.push(walk());
+    }
+
+    // 最后Parser将返回得到的AST
+    return ast;
   }
 }
